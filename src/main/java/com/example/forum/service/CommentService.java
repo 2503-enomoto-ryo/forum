@@ -8,7 +8,11 @@ import com.example.forum.repository.entity.Comment;
 import com.example.forum.repository.entity.Report;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.servlet.ModelAndView;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +30,11 @@ public class CommentService {
     public void saveComment(CommentForm reqComment) {
         Comment saveComment = setCommentEntity(reqComment);
         commentRepository.save(saveComment);
+
+        //コメントが紐づく投稿の更新日時を上書き
+        Report report = saveComment.getReport();
+        report.setUpdatedDate(LocalDateTime.now());
+        reportRepository.save(report);
     }
     /*
      * リクエストから取得した情報をEntityに設定
@@ -40,6 +49,14 @@ public class CommentService {
         return comment;
     }
 
+    /*
+     * コメントのレコード全件取得処理
+     */
+    public List<CommentForm> findAllComment() {
+        List<Comment> results = commentRepository.findAllByOrderByUpdatedDateDesc();
+        List<CommentForm> comments = setCommentForm(results);
+        return comments;
+    }
 
     /*
      * DBから取得したコメントデータをFormに設定
@@ -52,8 +69,28 @@ public class CommentService {
             Comment result = results.get(i);
             comment.setId(result.getId());
             comment.setComment(result.getComment());
+            comment.setReportId(result.getReport().getId());
+            comment.setCreatedDate(result.getCreatedDate());
+            comment.setUpdatedDate(result.getUpdatedDate());
             comments.add(comment);
         }
         return comments;
+    }
+
+    /*
+     * レコード1件取得(コメント編集機能)
+     */
+    public CommentForm editComment(Integer id) {
+        List<Comment> results = new ArrayList<>();
+        results.add((Comment) commentRepository.findById(id).orElse(null));
+        List<CommentForm> comments = setCommentForm(results);
+        return comments.get(0);
+    }
+
+    /*
+     * レコード削除(コメント)
+     */
+    public void deleteComment(Integer id){
+        commentRepository.deleteById(id);
     }
 }

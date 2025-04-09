@@ -10,6 +10,11 @@
         <h1>匿名掲示板</h1>
     </div>
     <div class="main-contents">
+        <form action="./" method="get">
+            <span class="select_date">投稿日時で絞り込み　</span>
+            <span><input name="start" type="date" th:value="${start}"/> ～ <input name="end" type="date" th:value="${end}"/></span>
+            <span><input name="select_date" type=submit value="絞込"/></span>
+        </form>
         <a href="/new">
             <button class="new-button" type="button">新規投稿</button>
         </a>
@@ -20,19 +25,35 @@
             <div class="text">
                 投稿 : <span th:text="${content.content}"/>
             </div>
-            <div class="delete-button">
-                <form th:action="@{/delete/{id}(id=${content.id})}" th:method="delete">
-                    <input type="submit" value="削除">
-                </form>
-            </div>
             <div class="edit-button">
                 <a th:href="@{/edit/{id}(id=${content.id})}">
                     <input type="button" value="編集">
                 </a>
             </div>
+            <div class="delete-button">
+                <form th:action="@{/delete/{id}(id=${content.id})}" th:method="delete">
+                    <input type="submit" value="削除">
+                </form>
+            </div>
             <div class="comments">
-                <div th:each="comment : ${comments}">
-                    <p th:text="${comment.comment}"></p>
+                <div th:each="comment : ${commentsData}" th:if="${comment.reportId} == ${content.id}">
+                    <div>
+                        コメントID : <span th:text="${comment.id}"/>
+                    </div>
+                    <div class="text">
+                        コメント内容 : <span th:text="${comment.comment}"/>
+                    </div>
+                    <div class="edit-button">
+                        <a th:href="@{/editComment/{id}(id=${comment.id})}">
+                            <input type="hidden" name="reportId" th:value="${comment.reportId}">
+                            <input type="button" value="編集">
+                        </a>
+                    </div>
+                    <div class="delete-button">
+                        <form th:action="@{/deleteComment/{id}(id=${comment.id})}" th:method="delete">
+                            <input type="submit" value="削除">
+                        </form>
+                    </div>
                 </div>
             </div>
             <div class="comment">
