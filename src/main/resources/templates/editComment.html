@@ -14,6 +14,7 @@
     <div class="form-area">
       <label>コメント内容</label>
       <textarea class="tweet-box" name="comment" th:field="*{comment}" size="20" maxlength="200" /></textarea><br/>
+      <div class="error-message" th:if="${#fields.hasErrors('comment')}" th:errors="*{comment}"></div>
       <input type="hidden" th:field="*{reportId}"/>
       <input type="submit" value="更新"/>
     </div>

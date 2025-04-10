@@ -6,6 +6,8 @@ import com.example.forum.service.CommentService;
 import com.example.forum.service.ReportService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -60,7 +62,11 @@ public class ForumController {
      * 新規投稿処理
      */
     @PostMapping("/add")
-    public ModelAndView addContent(@ModelAttribute("formModel") ReportForm reportForm) {
+    public ModelAndView addContent(@ModelAttribute("formModel") @Validated ReportForm reportForm, BindingResult result) {
+        if (result.hasErrors()) {
+            // バリデーションエラー時、new画面へ戻す
+            return new ModelAndView("/new");
+        }
         // 投稿をテーブルに格納
         reportService.saveReport(reportForm);
         // rootへリダイレクト
@@ -97,7 +103,11 @@ public class ForumController {
      * 投稿編集処理
      */
     @PutMapping("/update/{id}")
-    public ModelAndView updateContent(@PathVariable Integer id, @ModelAttribute("formModel") ReportForm report) {
+    public ModelAndView updateContent(@PathVariable Integer id, @ModelAttribute("formModel") @Validated ReportForm report, BindingResult result) {
+        if (result.hasErrors()) {
+            // バリデーションエラー時、edit画面へ戻す
+            return new ModelAndView("/edit");
+        }
         // UrlParameterのidを更新するentityにセット
         report.setId(id);
         // 編集した投稿を更新
@@ -111,7 +121,11 @@ public class ForumController {
      * コメント投稿処理
      */
     @PostMapping("/comment/{contentId}")
-    public ModelAndView addComment(@ModelAttribute("commentForm")CommentForm comment, @PathVariable Integer contentId) {
+    public ModelAndView addComment(@ModelAttribute("commentForm") @Validated CommentForm comment, BindingResult result, @PathVariable Integer contentId) {
+        if (result.hasErrors()) {
+            // バリデーションエラー時、top画面へリダイレクト
+            return new ModelAndView("redirect/");
+        }
         //コメントがどの投稿に紐づくか設定
         comment.setReportId(contentId);
         //コメントをテーブルへ格納
@@ -139,7 +153,11 @@ public class ForumController {
      * コメント編集処理
      */
     @PutMapping("/updateComment/{id}")
-    public ModelAndView updateComment(@PathVariable Integer id, @ModelAttribute("commentForm") CommentForm comment) {
+    public ModelAndView updateComment(@PathVariable Integer id, @ModelAttribute("commentForm") @Validated CommentForm comment, BindingResult result) {
+        if (result.hasErrors()) {
+            // バリデーションエラー時、edit画面へ戻す
+            return new ModelAndView("/editComment");
+        }
         // UrlParameterのidを更新するentityにセット
         comment.setId(id);
         // 編集した投稿を更新
