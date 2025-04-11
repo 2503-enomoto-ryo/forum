@@ -61,7 +61,10 @@
                     <input type="hidden" th:name="reportId" th:value="${content.id}" />
                     <div class="form-area">
                         <label>コメント内容</label>
-                        <textarea class="comment-box" th:field="*{comment}" size="20" maxlength="200" /></textarea><br/>
+                        <textarea class="comment-box" th:field="*{comment}" size="20" maxlength="200"></textarea><br/>
+                        <div th:if="${error}" class="error-message">
+                            <p th:text="${error.defaultMessage}"></p>
+                        </div>
                         <input type="submit" value="コメント" />
                     </div>
                 </form>

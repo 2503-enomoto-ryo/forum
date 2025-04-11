@@ -32,7 +32,7 @@ public class CommentService {
         commentRepository.save(saveComment);
 
         //コメントが紐づく投稿の更新日時を上書き
-        Report report = saveComment.getReport();
+        Report report = reportRepository.findById(saveComment.getReportId()).orElse(null);
         report.setUpdatedDate(LocalDateTime.now());
         reportRepository.save(report);
     }
@@ -43,9 +43,7 @@ public class CommentService {
         Comment comment = new Comment();
         comment.setId(reqComment.getId());
         comment.setComment(reqComment.getComment());
-
-        Report report = reportRepository.findById(reqComment.getReportId()).orElse(null);
-        comment.setReport(report);
+        comment.setReportId(reqComment.getReportId());
         return comment;
     }
 
@@ -69,7 +67,7 @@ public class CommentService {
             Comment result = results.get(i);
             comment.setId(result.getId());
             comment.setComment(result.getComment());
-            comment.setReportId(result.getReport().getId());
+            comment.setReportId(result.getReportId());
             comment.setCreatedDate(result.getCreatedDate());
             comment.setUpdatedDate(result.getUpdatedDate());
             comments.add(comment);

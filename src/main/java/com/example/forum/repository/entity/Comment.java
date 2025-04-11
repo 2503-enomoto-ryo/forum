@@ -17,6 +17,7 @@ import java.util.Date;
 @Getter
 @Setter
 public class Comment {
+
     @Id
     @Column
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,9 +26,8 @@ public class Comment {
     @Column
     private String comment;
 
-    @ManyToOne
-    @JoinColumn(name = "report_id")
-    private Report report;
+    @Column(name = "report_id")
+    private int reportId;
 
     @CreatedDate
     @Column(name = "created_at", updatable = false)

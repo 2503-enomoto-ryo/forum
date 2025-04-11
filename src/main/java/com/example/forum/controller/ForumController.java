@@ -4,14 +4,17 @@ import com.example.forum.controller.form.CommentForm;
 import com.example.forum.controller.form.ReportForm;
 import com.example.forum.service.CommentService;
 import com.example.forum.service.ReportService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -20,6 +23,8 @@ public class ForumController {
     ReportService reportService;
     @Autowired
     CommentService commentService;
+    @Autowired
+    HttpSession session;
 
     /*
      * 投稿内容表示処理
@@ -31,6 +36,12 @@ public class ForumController {
         List<ReportForm> contentData = reportService.findByCreatedDateRange(start, end);
         // コメントを全件取得
         List<CommentForm> commentData = commentService.findAllComment();
+
+        Object error = session.getAttribute("error");
+        if(error != null) {
+            mav.addObject("error", error);
+            session.removeAttribute("error");
+        }
         // 画面遷移先を指定
         mav.setViewName("/top");
         // 投稿データオブジェクトを保管
@@ -123,8 +134,10 @@ public class ForumController {
     @PostMapping("/comment/{contentId}")
     public ModelAndView addComment(@ModelAttribute("commentForm") @Validated CommentForm comment, BindingResult result, @PathVariable Integer contentId) {
         if (result.hasErrors()) {
-            // バリデーションエラー時、top画面へリダイレクト
-            return new ModelAndView("redirect/");
+            ObjectError error = result.getAllErrors().get(0);
+            session.setAttribute("error",error);
+            // バリデーションエラー時、top画面へ戻す
+            return new ModelAndView("redirect:/");
         }
         //コメントがどの投稿に紐づくか設定
         comment.setReportId(contentId);

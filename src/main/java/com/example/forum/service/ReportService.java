@@ -26,7 +26,7 @@ public class ReportService {
         if (start != null) {
             startDateTime = start.atStartOfDay();
         } else {
-            startDateTime = LocalDate.of(2020,1,1).atStartOfDay();
+            startDateTime = LocalDate.of(2020, 1, 1).atStartOfDay();
         }
         if (end != null) {
             endDateTime = end.atTime(23, 59, 59);
@@ -38,6 +38,7 @@ public class ReportService {
         List<ReportForm> reports = setReportForm(results);
         return reports;
     }
+
     /*
      * DBから取得したデータをFormに設定
      */
@@ -75,7 +76,7 @@ public class ReportService {
     /*
      * レコード削除
      */
-    public void deleteReport(Integer id){
+    public void deleteReport(Integer id) {
         reportRepository.deleteById(id);
     }
 
