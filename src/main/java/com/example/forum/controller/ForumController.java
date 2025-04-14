@@ -38,7 +38,9 @@ public class ForumController {
         List<CommentForm> commentData = commentService.findAllComment();
 
         Object error = session.getAttribute("error");
+        Object formReportId = session.getAttribute("formReportId");
         if(error != null) {
+            mav.addObject("formReportId", formReportId);
             mav.addObject("error", error);
             session.removeAttribute("error");
         }
@@ -136,6 +138,7 @@ public class ForumController {
         if (result.hasErrors()) {
             ObjectError error = result.getAllErrors().get(0);
             session.setAttribute("error",error);
+            session.setAttribute("formReportId", contentId);
             // バリデーションエラー時、top画面へ戻す
             return new ModelAndView("redirect:/");
         }
